@@ -22,12 +22,12 @@ export default function AdminPage() {
       ]);
 
     if (error) {
-      alert("Erro ao adicionar");
       console.log(error);
+      alert("Erro ao adicionar");
       return;
     }
 
-    alert("Filme adicionado!");
+    alert("Adicionado com sucesso!");
 
     setTitulo("");
     setVideo("");
@@ -44,7 +44,7 @@ export default function AdminPage() {
         padding: "20px",
       }}
     >
-      <h1>ADMIN</h1>
+      <h1>PAINEL ADMIN</h1>
 
       <div
         style={{
@@ -114,8 +114,8 @@ export default function AdminPage() {
           style={{
             padding: "12px",
             background: "red",
-            color: "#fff",
             border: "none",
+            color: "#fff",
             borderRadius: "8px",
             cursor: "pointer",
           }}
