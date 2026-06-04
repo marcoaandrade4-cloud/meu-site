@@ -1,48 +1,23 @@
-const filmes = [
-  {
-    id: "1",
-    titulo: "Avatar",
-    video: "https://www.w3schools.com/html/mov_bbb.mp4",
-  },
-  {
-    id: "2",
-    titulo: "Batman",
-    video: "https://www.w3schools.com/html/movie.mp4",
-  },
-  {
-    id: "3",
-    titulo: "Superman",
-    video: "https://www.w3schools.com/html/mov_bbb.mp4",
-  },
-];
+import { supabase } from "@/lib/supabase";
 
 export default async function WatchPage({ params }) {
   const { id } = await params;
 
-  const filme = filmes.find((f) => f.id === id);
+  const { data: filme } = await supabase
+    .from("filmes")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (!filme) {
-    return (
-      <main
-        style={{
-          minHeight: "100vh",
-          background: "#000",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <h1>Filme não encontrado</h1>
-      </main>
-    );
+    return <h1>Filme não encontrado</h1>;
   }
 
   return (
     <main
       style={{
-        minHeight: "100vh",
         background: "#000",
+        minHeight: "100vh",
         color: "#fff",
         padding: "20px",
       }}
@@ -54,10 +29,12 @@ export default async function WatchPage({ params }) {
         width="100%"
         style={{
           maxWidth: "1000px",
-          borderRadius: "10px",
         }}
       >
-        <source src={filme.video} type="video/mp4" />
+        <source
+          src={filme.video}
+          type="video/mp4"
+        />
       </video>
     </main>
   );

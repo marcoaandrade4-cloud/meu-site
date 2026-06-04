@@ -1,159 +1,54 @@
-"use client";
+import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
-import { useEffect, useState } from "react";
-
-export default function HomePage() {
-  const [items, setItems] = useState([]);
-  const [search, setSearch] =
-    useState("");
-
-  useEffect(() => {
-    let saved =
-      JSON.parse(
-        localStorage.getItem("movies")
-      ) || [];
-
-    setItems(saved);
-  }, []);
-
-  const filtered = items.filter(
-    (item) =>
-      item.title
-        .toLowerCase()
-        .includes(search.toLowerCase())
-  );
+export default async function Home() {
+  const { data: filmes } = await supabase
+    .from("filmes")
+    .select("*");
 
   return (
     <main
       style={{
         background: "#111",
         minHeight: "100vh",
-        color: "white",
+        color: "#fff",
         padding: "20px",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent:
-            "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h1 style={{ color: "red" }}>
-          Stream Flix
-        </h1>
-
-        <a
-          href="/login"
-          style={{
-            color: "white",
-            textDecoration: "none",
-          }}
-        >
-          ADM
-        </a>
-      </div>
-
-      <br />
-
-      <input
-        type="text"
-        placeholder="Pesquisar..."
-        value={search}
-        onChange={(e) =>
-          setSearch(e.target.value)
-        }
-        style={{
-          width: "100%",
-          padding: "15px",
-          borderRadius: "10px",
-          border: "none",
-          marginBottom: "30px",
-        }}
-      />
-
-      <h2>Filmes</h2>
+      <h1>STREAMFLIXX</h1>
 
       <div
         style={{
-          display: "flex",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(200px, 1fr))",
           gap: "20px",
-          flexWrap: "wrap",
+          marginTop: "20px",
         }}
       >
-        {filtered
-          .filter(
-            (item) =>
-              item.type === "movie"
-          )
-          .map((movie) => (
-            <a
-              key={movie.id}
-              href={`/watch/${movie.id}`}
-              style={{
-                width: "200px",
-                color: "white",
-                textDecoration: "none",
-              }}
-            >
-              {movie.image && (
-                <img
-                  src={movie.image}
-                  alt={movie.title}
-                  style={{
-                    width: "100%",
-                    borderRadius: "10px",
-                  }}
-                />
-              )}
+        {filmes?.map((filme) => (
+          <Link
+            key={filme.id}
+            href={`/watch/${filme.id}`}
+            style={{
+              textDecoration: "none",
+              color: "#fff",
+            }}
+          >
+            <div>
+              <img
+                src={filme.capa}
+                alt={filme.titulo}
+                style={{
+                  width: "100%",
+                  borderRadius: "10px",
+                }}
+              />
 
-              <p>{movie.title}</p>
-            </a>
-          ))}
-      </div>
-
-      <br />
-      <br />
-
-      <h2>Séries</h2>
-
-      <div
-        style={{
-          display: "flex",
-          gap: "20px",
-          flexWrap: "wrap",
-        }}
-      >
-        {filtered
-          .filter(
-            (item) =>
-              item.type === "series"
-          )
-          .map((serie) => (
-            <a
-              key={serie.id}
-              href={`/watch/${serie.id}`}
-              style={{
-                width: "200px",
-                color: "white",
-                textDecoration: "none",
-              }}
-            >
-              {serie.image && (
-                <img
-                  src={serie.image}
-                  alt={serie.title}
-                  style={{
-                    width: "100%",
-                    borderRadius: "10px",
-                  }}
-                />
-              )}
-
-              <p>{serie.title}</p>
-            </a>
-          ))}
+              <h2>{filme.titulo}</h2>
+            </div>
+          </Link>
+        ))}
       </div>
     </main>
   );
