@@ -1,15 +1,33 @@
+const filmes = [
+  {
+    id: "1",
+    titulo: "Avatar",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+  },
+  {
+    id: "2",
+    titulo: "Batman",
+    video: "https://www.w3schools.com/html/movie.mp4",
+  },
+  {
+    id: "3",
+    titulo: "Superman",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4",
+  },
+];
+
 export async function generateStaticParams() {
-  return [
-    { id: "1" },
-    { id: "2" },
-    { id: "3" },
-    { id: "4" },
-    { id: "5" },
-  ];
+  return filmes.map((filme) => ({
+    id: filme.id,
+  }));
 }
 
 export default async function WatchPage({ params }) {
-  const { id } = await params;
+  const filme = filmes.find((f) => f.id === params.id);
+
+  if (!filme) {
+    return <h1>Filme não encontrado</h1>;
+  }
 
   return (
     <main
@@ -17,24 +35,17 @@ export default async function WatchPage({ params }) {
         minHeight: "100vh",
         background: "#000",
         color: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "20px",
+        padding: "20px",
       }}
     >
-      <h1>Assistindo filme {id}</h1>
+      <h1>{filme.titulo}</h1>
 
       <video
         controls
-        width="900"
-        poster="https://picsum.photos/1200/700"
+        width="100%"
+        style={{ maxWidth: "1000px" }}
       >
-        <source
-          src="https://www.w3schools.com/html/mov_bbb.mp4"
-          type="video/mp4"
-        />
+        <source src={filme.video} type="video/mp4" />
       </video>
     </main>
   );
