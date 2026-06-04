@@ -16,17 +16,26 @@ const filmes = [
   },
 ];
 
-export async function generateStaticParams() {
-  return filmes.map((filme) => ({
-    id: filme.id,
-  }));
-}
-
 export default async function WatchPage({ params }) {
-  const filme = filmes.find((f) => f.id === params.id);
+  const { id } = await params;
+
+  const filme = filmes.find((f) => f.id === id);
 
   if (!filme) {
-    return <h1>Filme não encontrado</h1>;
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "#000",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <h1>Filme não encontrado</h1>
+      </main>
+    );
   }
 
   return (
@@ -43,7 +52,10 @@ export default async function WatchPage({ params }) {
       <video
         controls
         width="100%"
-        style={{ maxWidth: "1000px" }}
+        style={{
+          maxWidth: "1000px",
+          borderRadius: "10px",
+        }}
       >
         <source src={filme.video} type="video/mp4" />
       </video>
