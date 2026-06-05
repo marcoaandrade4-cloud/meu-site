@@ -1,0 +1,33 @@
+-- Tabela de usuários admin
+CREATE TABLE IF NOT EXISTS usuarios_admin (
+  id BIGSERIAL PRIMARY KEY,
+  usuario VARCHAR(50) UNIQUE NOT NULL,
+  senha_hash VARCHAR(255) NOT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de séries
+CREATE TABLE IF NOT EXISTS series (
+  id BIGSERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL,
+  descricao TEXT,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de temporadas
+CREATE TABLE IF NOT EXISTS temporadas (
+  id BIGSERIAL PRIMARY KEY,
+  serie_id BIGINT REFERENCES series(id) ON DELETE CASCADE,
+  numero INTEGER NOT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de episódios
+CREATE TABLE IF NOT EXISTS episodios (
+  id BIGSERIAL PRIMARY KEY,
+  temporada_id BIGINT REFERENCES temporadas(id) ON DELETE CASCADE,
+  numero INTEGER NOT NULL,
+  titulo VARCHAR(255) NOT NULL,
+  video VARCHAR(500) NOT NULL,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
