@@ -1,54 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
   const router = useRouter();
 
-  const [username, setUsername] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
-
-  function login() {
-    let users =
-      JSON.parse(
-        localStorage.getItem("users")
-      ) || [];
-
-    if (users.length === 0) {
-      users = [
-        {
-          username: "marco",
-          password: "22510827",
-        },
-      ];
-
-      localStorage.setItem(
-        "users",
-        JSON.stringify(users)
-      );
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    if (token) {
+      router.push("/admin");
     }
+  }, []);
 
-    const found = users.find(
-      (u) =>
-        u.username === username &&
-        u.password === password
-    );
+  async function fazerLogin() {
+    setLoading(true);
+    setErro("");
 
-    if (!found) {
-      alert("Login inválido");
-      return;
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, senha }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErro(data.erro || "Erro ao fazer login");
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("admin_token", data.token);
+      localStorage.setItem("admin_usuario", data.usuario);
+
+      router.push("/admin");
+    } catch (err) {
+      setErro("Erro ao conectar com servidor");
+      setLoading(false);
     }
-
-    localStorage.setItem(
-      "loggedAdmin",
-      "true"
-    );
-
-    router.push("/admin");
   }
 
   return (
@@ -56,6 +51,7 @@ export default function LoginPage() {
       style={{
         background: "#111",
         minHeight: "100vh",
+        color: "#fff",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -63,55 +59,91 @@ export default function LoginPage() {
     >
       <div
         style={{
-          background: "#222",
+          background: "#1a1a1a",
           padding: "40px",
           borderRadius: "10px",
-          width: "400px",
+          maxWidth: "400px",
+          width: "100%",
+          border: "1px solid #333",
         }}
       >
-        <h1 style={{ color: "red" }}>
-          Login ADM
+        <h1 style={{ textAlign: "center", marginBottom: "30px" }}>
+          STREAMFLIXX - Admin
         </h1>
 
-        <input
-          placeholder="Usuário"
-          value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "20px",
-          }}
-        />
+        {erro && (
+          <div
+            style={{
+              background: "#8b0000",
+              color: "#fff",
+              padding: "10px",
+              borderRadius: "5px",
+              marginBottom: "20px",
+              textAlign: "center",
+            }}
+          >
+            {erro}
+          </div>
+        )}
 
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "20px",
-          }}
-        />
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", marginBottom: "5px" }}>
+            Usuário:
+          </label>
+          <input
+            type="text"
+            value={usuario}
+            onChange={(e) => setUsuario(e.target.value)}
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #333",
+              background: "#222",
+              color: "#fff",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: "30px" }}>
+          <label style={{ display: "block", marginBottom: "5px" }}>
+            Senha:
+          </label>
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            disabled={loading}
+            onKeyPress={(e) => e.key === "Enter" && fazerLogin()}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #333",
+              background: "#222",
+              color: "#fff",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
 
         <button
-          onClick={login}
+          onClick={fazerLogin}
+          disabled={loading || !usuario || !senha}
           style={{
             width: "100%",
-            padding: "10px",
-            background: "red",
+            padding: "12px",
+            background: loading ? "#555" : "red",
+            color: "#fff",
             border: "none",
-            color: "white",
-            cursor: "pointer",
+            borderRadius: "5px",
+            cursor: loading ? "not-allowed" : "pointer",
+            fontSize: "16px",
           }}
         >
-          Entrar
+          {loading ? "Entrando..." : "Entrar"}
         </button>
       </div>
     </main>
